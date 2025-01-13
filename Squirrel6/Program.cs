@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO.Compression;
 using OpenTK.Graphics.OpenGL;
 using DirectXTexNet;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace Squirrel {
 
@@ -156,6 +157,8 @@ namespace Squirrel {
                 }
             } else if (Path.GetExtension(o.InputFile) == ".lmz") {
                 ExtractLMZ(o.InputFile, of);
+            } else if (Path.GetExtension(o.InputFile) == ".pac") {
+                ExtractMarioKartPac(o.InputFile, of);
             } else if (Directory.Exists(o.InputFile)) {
                 WriteLineIfVerbose("Checking directory: " + o.InputFile);
                 bool is_dds = false;
@@ -207,7 +210,7 @@ namespace Squirrel {
                     return 1;
                 }
             } else {
-                WriteLineIfNotQuiet("You can't feed this to a squirrel! (Not a directory and unknown file type: " + Path.GetExtension(o.InputFile) + ")");
+                WriteLineIfNotQuiet("You can't feed this to a squirrel! (Not a directory or unknown file type: " + Path.GetExtension(o.InputFile) + ")");
                 return 1;
             }
 
@@ -416,6 +419,30 @@ namespace Squirrel {
 
             WriteLineIfVerbose("Merging as: " + outfile);
             File.WriteAllBytes(outfile.ToString(), nut.Rebuild());
+        }
+
+        private static void ExtractMarioKartPac(string inputFile, OutputFile output) {
+            WriteLineIfNotQuiet("Opening PAC file: " + inputFile);
+            byte[] data = File.ReadAllBytes(inputFile);
+            if (data[0] == 'p' && data[1] == 'a' && data[2] == 'c' && data[3] == 'k') {
+                for (int i = 4; i < data.Length; i++) {
+                    if (data[i] == 'D' && data[i+1] == 'D' && data[i+2] == 'S') {
+                        WriteLineIfVerbose("Found DDS at offset " + i);
+                        byte[] data2 = new byte[data.Length - i];
+                        Array.Copy(data, i, data2, 0, data2.Length);
+                        OutputFile of2 = new OutputFile() {
+                            directory = output.directory,
+                            extension = ".dds",
+                            filename = Path.GetFileName(inputFile)+"_"+i
+                        };
+                        Dds dds = new Dds(new FileData(data2));
+                        WriteLineIfNotQuiet("Saving image: " + of2.ToString());
+                        dds.Save(of2.ToString());
+                    }
+                }
+            } else {
+                WriteLineIfNotQuiet("Invalid format");
+            }
         }
     }
 }

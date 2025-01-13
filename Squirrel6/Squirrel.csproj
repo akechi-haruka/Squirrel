@@ -11,6 +11,10 @@
 	  <UseWindowsForms>true</UseWindowsForms>
 
 	  <Authors>Haruka, Yonokid, SmashForge Authors</Authors>
+
+	  <FileVersion>0.6.0.0</FileVersion>
+
+	  <Version>0.6.0.0</Version>
   </PropertyGroup>
 
   <ItemGroup>

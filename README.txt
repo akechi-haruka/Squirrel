@@ -1,4 +1,4 @@
-Squirrel 0.5.2.0
+Squirrel
 Copyright (C) 2021-2024 Haruka, Yonokid, SmashForge Authors
 Licensed under the GPLv3.
 

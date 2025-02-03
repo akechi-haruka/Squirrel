@@ -417,6 +417,14 @@ namespace Squirrel {
                 nut.Nodes.Add(tex);
             }
 
+            if (outfile.filename == null) {
+                outfile.filename = Path.GetFileNameWithoutExtension(infiles[0]);
+            }
+
+            if (outfile.extension == null) {
+                outfile.extension = ".nut";
+            }
+
             WriteLineIfVerbose("Merging as: " + outfile);
             File.WriteAllBytes(outfile.ToString(), nut.Rebuild());
         }
